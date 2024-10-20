@@ -1,0 +1,30 @@
+[
+  {
+    "nama": "rizky ardiansyah",
+    "nim": "2203110502",
+    "email": "riski@gmail.com",
+    "jurusan": "ilmu komputer",
+    "idDoseWali": 1
+  },
+  {
+    "nama": "ardiansyah",
+    "nim": "2203110502",
+    "email": "riski@gmail.com",
+    "jurusan": "ilmu komputer",
+    "idDoseWali": 2
+  },
+  {
+    "nama": "Budi",
+    "nim": "2203110502",
+    "email": "riski@gmail.com",
+    "jurusan": "ilmu komputer",
+    "idDoseWali": 3
+  },
+  {
+    "nama": "Eddy",
+    "nim": "2203110502",
+    "email": "riski@gmail.com",
+    "jurusan": "ilmu komputer",
+    "idDoseWali": 4
+  }
+]
