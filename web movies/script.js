@@ -1,35 +1,37 @@
-console.log("mulai");
-$.ajax({
-  url: "http://www.omdbapi.com/?apikey=6de01f2b&s=avengers",
-  success: (response) => {
-    const { Search: films } = response;
-    let cards = ``;
-    console.log(films);
-    films.forEach((film) => {
-      cards += showFilms(film);
-    });
-    $(".movie-list").html(cards);
-    $(".movie-detail-button").on("click", function () {
-      $.ajax({
-        url:
-          "http://www.omdbapi.com/?apikey=6de01f2b&i=" + $(this).data("imdbid"),
-        success: (details) => {
-          const movieDetails = showDetailsFilm(details);
-          $(".modal-detail-movie").html(movieDetails);
-        },
-        error: (e) => {
-          console.log(e.responseText);
-        },
+$(".search-button").on("click", function () {
+  $.ajax({
+    url: "http://www.omdbapi.com/?apikey=6de01f2b&s=" + $(".input-film").val(),
+    success: (response) => {
+      const { Search: films } = response;
+      let cards = ``;
+      console.log(films);
+      films.forEach((film) => {
+        cards += showFilms(film);
       });
-    });
-  },
-  error: (e) => {
-    console.log(e.responseText);
-  },
+      $(".movie-list").html(cards);
+      $(".movie-detail-button").on("click", function () {
+        $.ajax({
+          url:
+            "http://www.omdbapi.com/?apikey=6de01f2b&i=" +
+            $(this).data("imdbid"),
+          success: (details) => {
+            const movieDetails = showDetailsFilm(details);
+            $(".modal-detail-movie").html(movieDetails);
+          },
+          error: (e) => {
+            console.log(e.responseText);
+          },
+        });
+      });
+    },
+    error: (e) => {
+      console.log(e.responseText);
+    },
+  });
 });
 
-function showFilms(films) {
-  `<div class="col-md-3 my-5">
+function showFilms(film) {
+  return `<div class="col-md-3 my-5">
                     <div class="card">
                         <img src="${film.Poster}" class="card-img-top img-fluid"  />
                         <div class="card-body">
@@ -43,7 +45,7 @@ function showFilms(films) {
 }
 
 function showDetailsFilm(details) {
-  `<div class="container-fluid">
+  return `<div class="container-fluid">
                                         <div class="row">
                                             <div class="col-md-3">
                                              <img src="${details.Poster}" class=" img-fluid"  /></div>
