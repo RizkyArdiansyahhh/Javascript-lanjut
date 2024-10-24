@@ -1,4 +1,6 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+  const dataFilmAwal = await getMovies("avengers");
+  updateUi(dataFilmAwal);
   // ketika tombol search di klik
   const btnSearch = document.querySelector(".search-button");
   btnSearch.addEventListener("click", async function () {
@@ -7,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateUi(dataFilm);
   });
 
+  //   ketika button show detail di klik
   document.addEventListener("click", async function (e) {
     if (e.target.classList.contains("movie-detail-button")) {
       const imdbID = e.target.dataset.imdbid;
@@ -19,15 +22,32 @@ document.addEventListener("DOMContentLoaded", function () {
 async function getMovies(keyword) {
   return fetch("http://www.omdbapi.com/?apikey=6de01f2b&s=" + keyword)
     .then((response) => response.json())
-    .then((data) => data.Search);
+    .then((data) => data);
 }
 
 function updateUi(data) {
-  let cards = ``;
-  data.forEach((film) => (cards += showFilms(film)));
+  const dataSearch = data.Search;
   const movieList = document.querySelector(".movie-list");
-  movieList.innerHTML = "";
-  movieList.innerHTML = cards;
+  if (data.Response === "True") {
+    let cards = ``;
+    dataSearch.forEach((film) => (cards += showFilms(film)));
+    movieList.innerHTML = cards;
+  } else if (data.Response === "False") {
+    movieList.innerHTML = filmNotFound();
+  }
+}
+
+function filmNotFound() {
+  return `
+    <figure class="text-center mt-5">
+      <blockquote class="blockquote">
+        <p>Film Yang Anda Cari Tidak Tersedia</p>
+      </blockquote>
+      <figcaption class="blockquote-footer">
+        Masukkan judul Yang Benar
+      </figcaption>
+    </figure>
+    `;
 }
 
 async function getMovieDetail(id) {
@@ -38,7 +58,6 @@ async function getMovieDetail(id) {
 
 function updateUiDetails(data) {
   const modal = document.querySelector(".modal-detail-movie");
-  modal.innerHTML = "";
   const details = showDetailsFilm(data);
   modal.innerHTML = details;
 }
