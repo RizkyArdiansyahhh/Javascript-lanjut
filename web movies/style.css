@@ -1,0 +1,17 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+.container-main {
+  background-color: #1a1a19;
+  min-height: 100vh;
+  color: azure;
+}
+.card {
+  height: 29rem !important;
+}
+.poster {
+  height: 20rem !important;
+  object-fit: cover;
+  object-position: center;
+}

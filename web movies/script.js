@@ -32,49 +32,53 @@
 
 // Menggunakan vanilla javascript
 
-const searchBtn = document.querySelector(".search-button");
-searchBtn.addEventListener("click", function () {
-  const inputFilm = document.querySelector(".input-film");
-  console.log("mulai");
-
-  fetch("http://www.omdbapi.com/?apikey=6de01f2b&s=" + inputFilm.value)
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("http://www.omdbapi.com/?apikey=6de01f2b&s=avengers")
     .then((response) => response.json())
     .then((data) => {
       const dataFilm = data.Search;
-      let cards = ``;
-      if (dataFilm != undefined) {
-        dataFilm.forEach((film) => (cards += showFilms(film)));
-        const movieList = document.querySelector(".movie-list");
-        movieList.innerHTML = cards;
+      let cards = `<h3 class = "mt-5 my-3">recommendations for you</h3>`;
+      dataFilm.forEach((film, i) => {
+        if (i < 4) {
+          cards += showFilms(film);
+        }
+      });
+      const movieList = document.querySelector(".movie-list");
+      movieList.innerHTML = cards;
 
-        // KETIKA TOMBOL SHOW DETAIL DI KLIK
-        const movieDetailButton = document.querySelectorAll(
-          ".movie-detail-button"
-        );
-        movieDetailButton.forEach((btn) => {
-          btn.addEventListener("click", function () {
-            const imdbid = this.dataset.imdbid;
-            fetch("http://www.omdbapi.com/?apikey=6de01f2b&i=" + imdbid)
-              .then((response) => response.json())
-              .then((data) => {
-                const movieDetails = showDetailsFilm(data);
-                const modalDetailMovie = document.querySelector(
-                  ".modal-detail-movie"
-                );
-                modalDetailMovie.innerHTML = movieDetails;
+      // JIKA USER INPUT JUDUL FILM
+      const searchBtn = document.querySelector(".search-button");
+      searchBtn.addEventListener("click", function () {
+        const inputFilm = document.querySelector(".input-film").value;
+        fetch("http://www.omdbapi.com/?apikey=6de01f2b&s=" + inputFilm)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.Response === "True") {
+              const resultFilm = data.Search;
+              cards = "";
+              resultFilm.forEach((film) => {
+                cards += showFilms(film);
               });
-          });
-        });
-      }
-    });
-
-  console.log("selesai");
+              movieList.innerHTML = "";
+              movieList.innerHTML = cards;
+            } else {
+              cards = filmNotFoud();
+              movieList.innerHTML = "";
+              movieList.innerHTML = cards;
+            }
+            BtnShowDetailsFilm();
+          })
+          .catch((e) => console.error(e.message));
+      });
+      BtnShowDetailsFilm();
+    })
+    .catch((e) => console.error(e.message));
 });
 
 function showFilms(film) {
-  return `<div class="col-md-3 my-5">
+  return `<div class="col-md-3 my-4">
                     <div class="card">
-                        <img src="${film.Poster}" class="card-img-top img-fluid"  />
+                        <img src="${film.Poster}" class="card-img-top img-fluid poster" />
                         <div class="card-body">
                         <h5 class="card-title">${film.Title}</h5>
                         <h6 class="card-subtitle mb-2 text-body-secondary">${film.Year}</h6>
@@ -102,4 +106,37 @@ function showDetailsFilm(details) {
                                             </div>
                                         </div>
                                     </div>`;
+}
+
+function filmNotFoud() {
+  return `
+  <figure class="text-center mt-5">
+    <blockquote class="blockquote">
+      <p>Film Yang Anda Cari Tidak Tersedia</p>
+    </blockquote>
+    <figcaption class="blockquote-footer">
+      Masukkan judul Yang Benar
+    </figcaption>
+  </figure>
+  `;
+}
+
+function BtnShowDetailsFilm() {
+  // KETIKA TOMBOL SHOW DETAIL DI KLIK
+  const movieDetailButton = document.querySelectorAll(".movie-detail-button");
+  movieDetailButton.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const imdbid = this.dataset.imdbid;
+      fetch("http://www.omdbapi.com/?apikey=6de01f2b&i=" + imdbid)
+        .then((response) => response.json())
+        .then((data) => {
+          const movieDetails = showDetailsFilm(data);
+          const modalDetailMovie = document.querySelector(
+            ".modal-detail-movie"
+          );
+          modalDetailMovie.innerHTML = movieDetails;
+        })
+        .catch((e) => console.error(e.message));
+    });
+  });
 }
