@@ -4,9 +4,15 @@ document.addEventListener("DOMContentLoaded", async function () {
   // ketika tombol search di klik
   const btnSearch = document.querySelector(".search-button");
   btnSearch.addEventListener("click", async function () {
-    const keywordSearch = document.querySelector(".input-film");
-    const dataFilm = await getMovies(keywordSearch.value);
-    updateUi(dataFilm);
+    try {
+      const keywordSearch = document.querySelector(".input-film");
+      const dataFilm = await getMovies(keywordSearch.value);
+      updateUi(dataFilm);
+    } catch (err) {
+      const movieList = document.querySelector(".movie-list");
+      movieList.innerHTML = "";
+      movieList.innerHTML = filmNotFound(err.message);
+    }
   });
 
   //   ketika button show detail di klik
@@ -21,27 +27,34 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 async function getMovies(keyword) {
   return fetch("http://www.omdbapi.com/?apikey=6de01f2b&s=" + keyword)
-    .then((response) => response.json())
-    .then((data) => data);
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      } else {
+        return response.json();
+      }
+    })
+    .then((data) => {
+      if (data.Response === "False") {
+        throw new Error(data.Error);
+      } else {
+        return data.Search;
+      }
+    });
 }
 
 function updateUi(data) {
-  const dataSearch = data.Search;
   const movieList = document.querySelector(".movie-list");
-  if (data.Response === "True") {
-    let cards = ``;
-    dataSearch.forEach((film) => (cards += showFilms(film)));
-    movieList.innerHTML = cards;
-  } else if (data.Response === "False") {
-    movieList.innerHTML = filmNotFound();
-  }
+  let cards = ``;
+  data.forEach((film) => (cards += showFilms(film)));
+  movieList.innerHTML = cards;
 }
 
-function filmNotFound() {
+function filmNotFound(message) {
   return `
     <figure class="text-center mt-5">
       <blockquote class="blockquote">
-        <p>Film Yang Anda Cari Tidak Tersedia</p>
+        <p>${message}</p>
       </blockquote>
       <figcaption class="blockquote-footer">
         Masukkan judul Yang Benar
@@ -52,7 +65,13 @@ function filmNotFound() {
 
 async function getMovieDetail(id) {
   return fetch("http://www.omdbapi.com/?apikey=6de01f2b&i=" + id)
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      } else {
+        return response.json();
+      }
+    })
     .then((data) => data);
 }
 
